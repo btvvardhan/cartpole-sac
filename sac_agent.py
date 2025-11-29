@@ -56,9 +56,20 @@ class SACAgent:
         self.tau = tau
         self.alpha = alpha
         self.batch_size = batch_size
-        self.device = torch.device(device if torch.cuda.is_available() else 'cpu')
+        
+        # Enforce GPU-only execution
+        if device != 'cuda':
+            raise ValueError(f"Device must be 'cuda' for GPU-only execution. Got: {device}")
+        if not torch.cuda.is_available():
+            raise RuntimeError(
+                "ERROR: CUDA is not available. This agent requires GPU execution.\n"
+                "Please ensure CUDA is properly configured and PyTorch has CUDA support."
+            )
+        
+        self.device = torch.device('cuda')
         
         print(f"SAC Agent initialized on device: {self.device}")
+        print(f"GPU: {torch.cuda.get_device_name(0)}")
         
         # Initialize networks
         self.actor = Actor(state_dim, action_dim, hidden_dim).to(self.device)

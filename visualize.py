@@ -7,7 +7,9 @@ import argparse
 import torch
 import gymnasium as gym
 import numpy as np
+import shimmy  # Required to register dm_control environments
 from sac_agent import SACAgent
+from utils import flatten_observation, get_obs_dim
 
 
 def visualize_agent(model_path: str, episodes: int = 5, render: bool = False):
@@ -32,8 +34,8 @@ def visualize_agent(model_path: str, episodes: int = 5, render: bool = False):
         env = gym.make(env_name)
     
     # Get dimensions
-    state_dim = env.observation_space.shape[0]
-    action_dim = env.action_space.shape[0]
+    state_dim = get_obs_dim(env.observation_space)
+    action_dim = env.action_space.shape[0] if hasattr(env.action_space, 'shape') else env.action_space.n
     
     # Create agent
     agent = SACAgent(
@@ -60,7 +62,8 @@ def visualize_agent(model_path: str, episodes: int = 5, render: bool = False):
     print("-" * 50)
     
     for episode in range(episodes):
-        state, _ = env.reset()
+        obs, _ = env.reset()
+        state = flatten_observation(obs)
         episode_reward = 0
         steps = 0
         done = False
@@ -70,7 +73,8 @@ def visualize_agent(model_path: str, episodes: int = 5, render: bool = False):
             action = agent.select_action(state, evaluate=True)
             
             # Take step
-            next_state, reward, terminated, truncated, _ = env.step(action)
+            next_obs, reward, terminated, truncated, _ = env.step(action)
+            next_state = flatten_observation(next_obs)
             done = terminated or truncated
             
             state = next_state

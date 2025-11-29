@@ -5,7 +5,7 @@ Utility functions for training and evaluation
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from typing import List
+from typing import List, Union, Dict
 
 
 def set_seed(seed: int):
@@ -223,3 +223,54 @@ def smooth_rewards(rewards: np.ndarray, window: int = 10) -> np.ndarray:
     # Pad the beginning to maintain same length
     padding = np.full(window - 1, smoothed[0])
     return np.concatenate([padding, smoothed])
+
+
+def flatten_observation(obs: Union[np.ndarray, Dict]) -> np.ndarray:
+    """
+    Flatten observation from Dict or array format to 1D array
+    
+    Args:
+        obs: Observation (can be dict or array)
+        
+    Returns:
+        Flattened observation as 1D numpy array
+    """
+    if isinstance(obs, dict):
+        # For Dict observations (like dm_control), concatenate all values
+        return np.concatenate([np.array(obs[key]).flatten() for key in sorted(obs.keys())])
+    else:
+        # Already an array, just flatten it
+        return np.array(obs).flatten()
+
+
+def get_obs_dim(observation_space) -> int:
+    """
+    Get observation dimension from observation space
+    
+    Args:
+        observation_space: Gymnasium observation space
+        
+    Returns:
+        Dimension of flattened observation
+    """
+    # Handle Dict observation spaces (like dm_control)
+    if hasattr(observation_space, 'spaces') and isinstance(observation_space.spaces, dict):
+        # Sum up dimensions from all subspaces
+        total_dim = 0
+        for key in sorted(observation_space.spaces.keys()):
+            space = observation_space.spaces[key]
+            if hasattr(space, 'shape'):
+                total_dim += np.prod(space.shape)
+            else:
+                # Fallback: sample and flatten
+                sample = space.sample()
+                total_dim += np.array(sample).flatten().shape[0]
+        return int(total_dim)
+    else:
+        # Regular Box space
+        if hasattr(observation_space, 'shape') and observation_space.shape is not None:
+            return int(np.prod(observation_space.shape))
+        else:
+            # Fallback: sample and check
+            sample = observation_space.sample()
+            return int(np.array(sample).flatten().shape[0])

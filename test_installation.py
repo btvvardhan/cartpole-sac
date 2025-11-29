@@ -87,12 +87,17 @@ def test_environment():
     
     try:
         import gymnasium as gym
+        import shimmy  # Required to register dm_control environments
+        from utils import get_obs_dim
+        
         env = gym.make("dm_control/cartpole-balance-v0")
         env.reset()
         print("✓ Environment created successfully")
         
-        print(f"  State dim: {env.observation_space.shape[0]}")
-        print(f"  Action dim: {env.action_space.shape[0]}")
+        state_dim = get_obs_dim(env.observation_space)
+        action_dim = env.action_space.shape[0] if hasattr(env.action_space, 'shape') else env.action_space.n
+        print(f"  State dim: {state_dim}")
+        print(f"  Action dim: {action_dim}")
         
         env.close()
         return True

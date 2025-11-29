@@ -7,6 +7,7 @@ import argparse
 import numpy as np
 import torch
 import gymnasium as gym
+import shimmy  # Required to register dm_control environments
 
 from sac_agent import SACAgent
 from utils import (
@@ -14,7 +15,9 @@ from utils import (
     create_results_dir, 
     plot_learning_curves,
     save_training_log,
-    print_progress
+    print_progress,
+    flatten_observation,
+    get_obs_dim
 )
 
 
@@ -38,11 +41,11 @@ def train_agent(env_name: str, seed: int, num_episodes: int,
     
     # Create environment
     env = gym.make(env_name)
-    env.reset(seed=seed)
+    obs, _ = env.reset(seed=seed)
     
     # Get environment dimensions
-    state_dim = env.observation_space.shape[0]
-    action_dim = env.action_space.shape[0]
+    state_dim = get_obs_dim(env.observation_space)
+    action_dim = env.action_space.shape[0] if hasattr(env.action_space, 'shape') else env.action_space.n
     
     # Initialize agent
     agent = SACAgent(
@@ -61,7 +64,8 @@ def train_agent(env_name: str, seed: int, num_episodes: int,
         print(f"{'='*70}")
     
     for episode in range(num_episodes):
-        state, _ = env.reset()
+        obs, _ = env.reset()
+        state = flatten_observation(obs)
         episode_reward = 0
         done = False
         steps = 0
@@ -71,7 +75,8 @@ def train_agent(env_name: str, seed: int, num_episodes: int,
             action = agent.select_action(state, evaluate=False)
             
             # Take step in environment
-            next_state, reward, terminated, truncated, _ = env.step(action)
+            next_obs, reward, terminated, truncated, _ = env.step(action)
+            next_state = flatten_observation(next_obs)
             done = terminated or truncated
             
             # Store transition in replay buffer
@@ -128,14 +133,16 @@ def evaluate_agent(agent: SACAgent, env_name: str, seed: int,
         print(f"{'='*70}")
     
     for episode in range(num_episodes):
-        state, _ = env.reset()
+        obs, _ = env.reset()
+        state = flatten_observation(obs)
         episode_reward = 0
         done = False
         
         while not done:
             # Use deterministic policy (mean action)
             action = agent.select_action(state, evaluate=True)
-            next_state, reward, terminated, truncated, _ = env.step(action)
+            next_obs, reward, terminated, truncated, _ = env.step(action)
+            next_state = flatten_observation(next_obs)
             done = terminated or truncated
             
             state = next_state
@@ -183,8 +190,21 @@ def main():
     parser.add_argument('--alpha', type=float, default=0.2,
                         help='Entropy temperature (default: 0.2)')
     parser.add_argument('--device', type=str, default='cuda',
-                        help='Device to use (default: cuda)')
+                        help='Device to use (must be cuda for GPU-only)')
     args = parser.parse_args()
+    
+    # Enforce GPU-only execution
+    if not torch.cuda.is_available():
+        raise RuntimeError(
+            "ERROR: CUDA is not available. This script requires GPU execution.\n"
+            "Please check:\n"
+            "  1. GPU drivers are installed: nvidia-smi\n"
+            "  2. PyTorch with CUDA support is installed\n"
+            "  3. CUDA is properly configured"
+        )
+    
+    if args.device != 'cuda':
+        raise ValueError(f"Device must be 'cuda' for GPU-only execution. Got: {args.device}")
     
     # Configuration
     ENV_NAME = "dm_control/cartpole-balance-v0"
@@ -193,7 +213,7 @@ def main():
     NUM_EPISODES = args.episodes
     EVAL_EPISODES = args.eval_episodes
     
-    # Agent configuration
+    # Agent configuration (force GPU)
     agent_config = {
         'hidden_dim': args.hidden_dim,
         'lr': args.lr,
@@ -201,7 +221,7 @@ def main():
         'tau': args.tau,
         'alpha': args.alpha,
         'batch_size': args.batch_size,
-        'device': args.device
+        'device': 'cuda'  # Force GPU
     }
     
     # Create results directory
@@ -219,7 +239,9 @@ def main():
     print(f"\nHyperparameters:")
     for key, value in agent_config.items():
         print(f"  {key}: {value}")
-    print(f"\nDevice: {torch.device(args.device if torch.cuda.is_available() else 'cpu')}")
+    print(f"\nDevice: GPU (CUDA)")
+    print(f"GPU Name: {torch.cuda.get_device_name(0)}")
+    print(f"CUDA Version: {torch.version.cuda}")
     print("="*70)
     
     # Storage for results
