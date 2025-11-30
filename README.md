@@ -7,16 +7,8 @@
 
 > A complete implementation of Soft Actor-Critic (SAC) for the DeepMind Control Suite Cart-Pole Balance task with comprehensive training metrics, evaluation results, and visualizations.
 
-## ⚠️ IMPORTANT NOTE FOR GRADERS
 
 **This code requires GPU (CUDA) to run and will not work on CPU-only systems.**
-
-The implementation enforces GPU-only execution for efficient training. If you attempt to run on a CPU-only system, you will receive an error message. Please see `GRADER_NOTE.md` for detailed information and troubleshooting.
-
-**To verify GPU availability:**
-```bash
-python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}')"
-```
 
 ## 📊 Results at a Glance
 
