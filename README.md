@@ -22,6 +22,10 @@
 
 ## 🎬 Visualizations
 
+### Demo Video
+
+Watch the trained agent in action! Use the visualization script to see the agent balance the cart-pole in real-time.
+
 ### Learning Curve
 
 ![Learning Curve](results/learning_curve.png)
@@ -66,7 +70,6 @@
 cartpole-sac/
 ├── README.md              # This file
 ├── requirements.txt       # Python dependencies
-├── run.sh                # One-command setup and execution
 ├── train.py              # Main training script
 ├── sac_agent.py          # SAC algorithm implementation
 ├── networks.py           # Actor and Critic neural networks
@@ -95,11 +98,7 @@ cartpole-sac/
 git clone <your-repo-url>
 cd cartpole-sac
 
-# Option 1: Automated setup (Recommended)
-chmod +x run.sh
-./run.sh
-
-# Option 2: Manual setup
+# Manual setup
 conda create -n sac python=3.10 -y
 conda activate sac
 pip install -r requirements.txt
@@ -116,12 +115,24 @@ python train.py
 python train.py --episodes 500 --lr 1e-4 --batch-size 128
 ```
 
-### Visualization
+### Real-Time Visualization
 
 ```bash
-# Visualize the trained agent
-python visualize.py --model results/best_model.pt --episodes 5
+# Watch the agent balance in real-time continuously (default: 1 episode, runs indefinitely)
+python visualize.py --model results/best_model.pt --render
+
+# Run for a specific maximum number of steps
+python visualize.py --model results/best_model.pt --render --max-steps 5000
+
+# Run multiple episodes
+python visualize.py --model results/best_model.pt --render --episodes 3
 ```
+
+**Note**: 
+- Requires a display. The window will show the cart-pole balancing in real-time!
+- By default runs **1 continuous episode** that automatically continues when time limit is reached
+- The episode keeps running until the pole falls or you press **Ctrl+C** to stop
+- The trained agent can balance continuously - the environment resets every 1000 steps and continues!
 
 ## 📊 Training Configuration
 
@@ -331,6 +342,8 @@ python train.py --episodes 300
 | `numpy` | ≥1.24.0 | Numerical computations |
 | `cycler` | ≥0.12.0 | Matplotlib dependency |
 | `kiwisolver` | ≥1.4.0 | Matplotlib dependency |
+| `imageio` | ≥2.31.0 | Video recording (optional) |
+| `imageio-ffmpeg` | ≥0.4.9 | Video codec support (optional) |
 
 Install all dependencies:
 ```bash
@@ -423,25 +436,6 @@ The `results/` directory contains:
 - `training_log.txt` - Complete training and evaluation statistics
 - `best_model.pt` - Best performing model checkpoint (997.14 reward)
 - `metrics_summary.json` - Machine-readable metrics summary
-
-Generate additional metrics:
-```bash
-python generate_metrics.py
-```
-
-## 🎥 Creating Videos/Demos
-
-To create demonstration videos of the trained agent:
-
-```bash
-# Run agent and capture frames (requires display)
-python visualize.py --model results/best_model.pt --episodes 5 --render
-
-# Or create a script to record video
-# (Note: dm_control rendering requires proper display setup)
-```
-
-For headless video recording, you can use the MuJoCo viewer or modify the visualization script to save frames.
 
 ---
 
