@@ -32,13 +32,6 @@ env/
 *.swo
 *~
 
-# Results
-results/
-*.pt
-*.pth
-*.png
-*.log
-*.txt
 
 # Jupyter
 .ipynb_checkpoints/

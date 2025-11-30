@@ -1,0 +1,10 @@
+torch>=2.0.0
+numpy>=1.24.0
+matplotlib>=3.7.0
+cycler>=0.12.0
+kiwisolver>=1.4.0
+dm_control>=1.0.10
+gymnasium>=0.29.0
+shimmy[dm-control]>=1.2.0
+imageio>=2.31.0
+imageio-ffmpeg>=0.4.9

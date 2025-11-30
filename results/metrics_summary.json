@@ -1,0 +1,37 @@
+{
+  "model": {
+    "actor_parameters": 67842,
+    "critic_parameters": 135682,
+    "total_parameters": 203524,
+    "model_size_mb": 2.8737077713012695
+  },
+  "training": {
+    "seed_0": {
+      "final_mean": 948.69,
+      "final_std": 2.07,
+      "best": 955.55
+    },
+    "seed_1": {
+      "final_mean": 944.15,
+      "final_std": 3.53,
+      "best": 958.32
+    },
+    "seed_2": {
+      "final_mean": 944.45,
+      "final_std": 4.49,
+      "best": 957.11
+    },
+    "evaluation_rewards": [
+      997.14,
+      986.1,
+      996.34
+    ],
+    "best_eval_reward": 997.14
+  },
+  "summary": {
+    "best_evaluation_reward": 997.14,
+    "average_evaluation_reward": 993.1933333333333,
+    "model_parameters": 203524,
+    "model_size_mb": 2.87
+  }
+}

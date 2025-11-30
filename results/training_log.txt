@@ -1,0 +1,52 @@
+======================================================================
+SAC TRAINING LOG - CART-POLE BALANCE
+======================================================================
+
+CONFIGURATION
+----------------------------------------------------------------------
+Environment: dm_control/cartpole-balance-v0
+Training Seeds: [0, 1, 2]
+Evaluation Seed: 10
+Number of Episodes: 300
+
+HYPERPARAMETERS
+----------------------------------------------------------------------
+hidden_dim: 256
+lr: 0.0003
+gamma: 0.99
+tau: 0.005
+alpha: 0.2
+batch_size: 256
+device: cuda
+
+TRAINING RESULTS
+----------------------------------------------------------------------
+Seed 0:
+  Final 10 episodes: 948.69 ± 2.07
+  Best episode: 955.55
+Seed 1:
+  Final 10 episodes: 944.15 ± 3.53
+  Best episode: 958.32
+Seed 2:
+  Final 10 episodes: 944.45 ± 4.49
+  Best episode: 957.11
+
+Overall (last 10 episodes):
+  Mean: 945.76
+  Std: 4.07
+
+EVALUATION RESULTS (seed=10)
+----------------------------------------------------------------------
+Agent trained with seed 0: 997.14
+Agent trained with seed 1: 986.10
+Agent trained with seed 2: 996.34
+
+Overall Evaluation:
+  Mean: 993.19
+  Std: 5.03
+  Best: 997.14
+  Worst: 986.10
+
+======================================================================
+End of Log
+======================================================================
