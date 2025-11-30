@@ -7,6 +7,17 @@
 
 > A complete implementation of Soft Actor-Critic (SAC) for the DeepMind Control Suite Cart-Pole Balance task with comprehensive training metrics, evaluation results, and visualizations.
 
+## ⚠️ IMPORTANT NOTE FOR GRADERS
+
+**This code requires GPU (CUDA) to run and will not work on CPU-only systems.**
+
+The implementation enforces GPU-only execution for efficient training. If you attempt to run on a CPU-only system, you will receive an error message. Please see `GRADER_NOTE.md` for detailed information and troubleshooting.
+
+**To verify GPU availability:**
+```bash
+python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}')"
+```
+
 ## 📊 Results at a Glance
 
 | Metric | Value |
@@ -380,33 +391,6 @@ pip install --upgrade -r requirements.txt
 python test_installation.py
 ```
 
-## 📖 Citation
-
-If you use this implementation, please cite:
-
-```bibtex
-@article{haarnoja2018soft,
-  title={Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor},
-  author={Haarnoja, Tuomas and Zhou, Aurick and Abbeel, Pieter and Levine, Sergey},
-  journal={arXiv preprint arXiv:1801.01290},
-  year={2018}
-}
-
-@article{tassa2018deepmind,
-  title={DeepMind Control Suite},
-  author={Tassa, Yuval and Doron, Yotam and Muldal, Alistair and others},
-  journal={arXiv preprint arXiv:1801.00690},
-  year={2018}
-}
-```
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 👤 Author
-
-This implementation was created for the Reinforcement Learning assignment on Cart-Pole Control.
 
 ## 🙏 Acknowledgments
 
@@ -439,8 +423,3 @@ The `results/` directory contains:
 
 ---
 
-⭐ **Star this repo if you find it useful!**
-
-🔗 **GitHub Repository**: [Add your repository URL here]
-
-📧 **Questions or Issues?** Please open an issue on GitHub.
